@@ -1,0 +1,74 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'org.dwarf'
+version = '1.0-SNAPSHOT'
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    opentelemetryVersion = '1.49.0'
+    grpcVersion = '1.61.1'
+    nettyVersion = '4.1.104.Final'
+    protoVersion = '3.25.1'
+}
+
+application {
+    mainClass = 'org.dwarf.Main'
+}
+
+dependencies {
+    // OpenTelemetry API & SDK
+    implementation "io.opentelemetry:opentelemetry-api:${opentelemetryVersion}"
+    implementation "io.opentelemetry:opentelemetry-sdk:${opentelemetryVersion}"
+    implementation "io.opentelemetry:opentelemetry-sdk-metrics:${opentelemetryVersion}"
+    implementation "io.opentelemetry:opentelemetry-sdk-trace:${opentelemetryVersion}"
+    
+    // OpenTelemetry Protocol (OTLP) gRPC exporter/receiver
+    implementation "io.opentelemetry:opentelemetry-exporter-otlp:${opentelemetryVersion}"
+    implementation "io.opentelemetry.proto:opentelemetry-proto:1.0.0-alpha"
+    
+    // gRPC dependencies
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    implementation "io.netty:netty-transport-native-epoll:${nettyVersion}:linux-x86_64"
+    implementation "com.google.protobuf:protobuf-java-util:${protoVersion}"
+    
+    // Logging
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'ch.qos.logback:logback-classic:1.2.12'
+    
+    // Testing
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+// Fat JAR 설정 (모든 의존성 포함)
+tasks.register('fatJar', Jar) {
+    archiveClassifier = 'all'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes 'Main-Class': 'org.dwarf.Main'
+    }
+
+    from sourceSets.main.output
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// 기본 빌드 시 fatJar 태스크 실행
+build.dependsOn fatJar
