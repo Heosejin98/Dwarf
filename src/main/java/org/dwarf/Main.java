@@ -1,6 +1,6 @@
 package org.dwarf;
 
-import org.dwarf.receiver.OtelTraceReceiver;
+import org.dwarf.collector.receiver.TraceReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class Main {
         
         try {
             // 트레이스 수신기 초기화 및 시작
-            OtelTraceReceiver receiver = new OtelTraceReceiver(port);
+            TraceReceiver receiver = new TraceReceiver(port);
             receiver.start();
             
             // 애플리케이션이 계속 실행되도록 대기
