@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * 트레이스의 단위 작업을 나타내는 스팬 모델 클래스
  */
-public class Span {
+public class DwSpan {
     private String traceId;              // 트레이스 ID
     private String spanId;               // 스팬 ID
     private String parentSpanId;         // 부모 스팬 ID
@@ -27,7 +27,7 @@ public class Span {
     /**
      * 기본 생성자
      */
-    public Span() {
+    public DwSpan() {
     }
 
     /**

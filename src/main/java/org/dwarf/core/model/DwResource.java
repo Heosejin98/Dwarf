@@ -7,7 +7,7 @@ import java.util.Map;
  * 트레이스 데이터 소스를 식별하는 리소스 모델 클래스
  * 서비스 인스턴스, 호스트, 컨테이너 등의 정보 포함
  */
-public class Resource {
+public class DwResource {
     private String serviceName;          // 서비스 이름
     private String serviceVersion;       // 서비스 버전
     private String serviceNamespace;     // 서비스 네임스페이스
@@ -21,7 +21,7 @@ public class Resource {
     /**
      * 기본 생성자
      */
-    public Resource() {
+    public DwResource() {
     }
 
     /**

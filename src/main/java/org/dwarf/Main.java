@@ -1,6 +1,9 @@
 package org.dwarf;
 
+import org.dwarf.collector.processor.TraceProcessor;
 import org.dwarf.collector.receiver.TraceReceiver;
+import org.dwarf.core.config.CollectorConfig;
+import org.dwarf.core.model.TraceData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,38 +12,63 @@ import org.slf4j.LoggerFactory;
  */
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
-    
-    // 기본 포트 설정
-    private static final int DEFAULT_PORT = 4317;
 
     public static void main(String[] args) {
-        logger.info("OpenTelemetry 트레이스 수신기 시작 중...");
-        
-        // 명령행 인수에서 포트 가져오기
-        int port = DEFAULT_PORT;
-        if (args.length > 0) {
-            try {
-                port = Integer.parseInt(args[0]);
-            } catch (NumberFormatException e) {
-                logger.warn("잘못된 포트 번호: {}. 기본 포트 {}를 사용합니다.", args[0], DEFAULT_PORT);
-            }
-        }
-        
+        logger.info("Starting Dwarf Solution");
+
         try {
-            // 트레이스 수신기 초기화 및 시작
-            TraceReceiver receiver = new TraceReceiver(port);
-            receiver.start();
-            
-            // 애플리케이션이 계속 실행되도록 대기
-            logger.info("OpenTelemetry 트레이스 수신기가 포트 {}에서 실행 중...", port);
-            logger.info("종료하려면 Ctrl+C를 누르세요");
-            
-            // 종료 신호가 올 때까지 대기
-            receiver.blockUntilShutdown();
-            
+            // 1. 설정 로드
+            logger.info("Loading configuration...");
+            CollectorConfig collectorConfig = loadCollectorConfig();
+
+            // 2. 리시버 초기화 및 시작
+            logger.info("Starting trace receiver on port {}...", collectorConfig.getGrpcPort());
+            TraceProcessor traceProcessor = new TraceProcessor() {
+                @Override
+                public void processTraces(TraceData traceData) {
+
+                }
+            };
+            TraceReceiver traceReceiver = new TraceReceiver(collectorConfig, traceProcessor);
+            traceReceiver.start();
+
+            logger.info("LightweightDwarf started successfully!");
+            logger.info("Listening for traces on gRPC port: {}", collectorConfig.getGrpcPort());
+            logger.info("Press Ctrl+C to shutdown");
+
+            // 3. 종료 신호 대기
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                logger.info("Shutting down application...");
+                try {
+                    traceReceiver.stop();
+                    logger.info("Application shutdown completed");
+                } catch (Exception e) {
+                    logger.error("Error during shutdown", e);
+                }
+            }));
+
+            // 메인 스레드 대기
+            Thread.currentThread().join();
+
         } catch (Exception e) {
-            logger.error("서버 실행 중 오류 발생", e);
+            logger.error("Error starting application", e);
             System.exit(1);
         }
+    }
+
+    /**
+     * 수집기 설정 로드
+     *
+     * @return 수집기 설정
+     */
+    private static CollectorConfig loadCollectorConfig() {
+        // 실제 구현에서는 YAML 등의 파일에서 설정을 로드할 수 있음
+        CollectorConfig config = new CollectorConfig();
+        config.setGrpcPort(4317);
+        config.setHttpPort(4318);
+        config.setBatchSize(100);
+        config.setProcessingIntervalMs(1000);
+        config.setMaxConcurrentRequests(10);
+        return config;
     }
 }

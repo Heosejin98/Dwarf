@@ -8,8 +8,8 @@ import java.util.List;
  * OpenTelemetry 프로토콜 메시지를 변환하여 저장하는 중간 데이터 구조
  */
 public class TraceData {
-    private List<Span> spans = new ArrayList<>();
-    private List<Resource> resources = new ArrayList<>();
+    private List<DwSpan> spans = new ArrayList<>();
+    private List<DwResource> resources = new ArrayList<>();
 
     /**
      * 기본 생성자
@@ -19,20 +19,11 @@ public class TraceData {
 
     /**
      * 스팬 목록을 반환
-     * 
+     *
      * @return 스팬 목록
      */
-    public List<Span> getSpans() {
+    public List<DwSpan> getSpans() {
         return spans;
-    }
-
-    /**
-     * 스팬 목록 설정
-     * 
-     * @param spans 설정할 스팬 목록
-     */
-    public void setSpans(List<Span> spans) {
-        this.spans = spans;
     }
 
     /**
@@ -40,7 +31,7 @@ public class TraceData {
      * 
      * @param span 추가할 스팬
      */
-    public void addSpan(Span span) {
+    public void addSpan(DwSpan span) {
         this.spans.add(span);
     }
 
@@ -49,25 +40,17 @@ public class TraceData {
      * 
      * @return 리소스 목록
      */
-    public List<Resource> getResources() {
+    public List<DwResource> getResources() {
         return resources;
     }
 
-    /**
-     * 리소스 목록 설정
-     * 
-     * @param resources 설정할 리소스 목록
-     */
-    public void setResources(List<Resource> resources) {
-        this.resources = resources;
-    }
 
     /**
      * 리소스 추가
      * 
      * @param resource 추가할 리소스
      */
-    public void addResource(Resource resource) {
+    public void addResource(DwResource resource) {
         this.resources.add(resource);
     }
 
@@ -78,52 +61,5 @@ public class TraceData {
      */
     public int getSpanCount() {
         return spans.size();
-    }
-
-    /**
-     * 에러를 포함한 스팬 목록 필터링
-     * 
-     * @return 에러를 포함한 스팬 목록
-     */
-    public List<Span> getErrorSpans() {
-        List<Span> errorSpans = new ArrayList<>();
-        for (Span span : spans) {
-            if (span.hasError()) {
-                errorSpans.add(span);
-            }
-        }
-        return errorSpans;
-    }
-
-    /**
-     * 지정된 서비스의 스팬 목록 필터링
-     * 
-     * @param serviceName 서비스 이름
-     * @return 해당 서비스의 스팬 목록
-     */
-    public List<Span> getSpansByService(String serviceName) {
-        List<Span> serviceSpans = new ArrayList<>();
-        for (Span span : spans) {
-            if (serviceName.equals(span.getServiceName())) {
-                serviceSpans.add(span);
-            }
-        }
-        return serviceSpans;
-    }
-
-    /**
-     * 서비스 이름 목록 반환
-     * 
-     * @return 트레이스에 포함된 고유 서비스 이름 목록
-     */
-    public List<String> getServiceNames() {
-        List<String> serviceNames = new ArrayList<>();
-        for (Span span : spans) {
-            String serviceName = span.getServiceName();
-            if (serviceName != null && !serviceNames.contains(serviceName)) {
-                serviceNames.add(serviceName);
-            }
-        }
-        return serviceNames;
     }
 }
