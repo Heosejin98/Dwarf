@@ -76,6 +76,7 @@ public class TraceReceiver {
                 // 1. 내부 모델로 변환
                 TraceData traceData = OtelTraceConverter.convertToTraceData(request);
                 logger.debug("Converted to internal model with {} spans", traceData.getSpanCount());
+                logger.debug("Converted to Trace model data {} ", traceData);
 
                 // 2. 트레이스 프로세서로 전달
                 traceProcessor.processTraces(traceData);

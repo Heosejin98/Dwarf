@@ -205,4 +205,26 @@ public class DwSpan {
     public void setDbSystem(String dbSystem) {
         this.dbSystem = dbSystem;
     }
+
+    @Override
+    public String toString() {
+        return "DwSpan{" +
+                "traceId='" + traceId + '\'' +
+                ", spanId='" + spanId + '\'' +
+                ", parentSpanId='" + parentSpanId + '\'' +
+                ", name='" + name + '\'' +
+                ", serviceName='" + serviceName + '\'' +
+                ", startTimeUnixNano=" + startTimeUnixNano +
+                ", endTimeUnixNano=" + endTimeUnixNano +
+                ", attributes=" + attributes +
+                ", hasError=" + hasError +
+                ", errorType='" + errorType + '\'' +
+                ", errorMessage='" + errorMessage + '\'' +
+                ", errorStacktrace='" + errorStacktrace + '\'' +
+                ", kind='" + kind + '\'' +
+                ", httpStatusCode=" + httpStatusCode +
+                ", dbStatement='" + dbStatement + '\'' +
+                ", dbSystem='" + dbSystem + '\'' +
+                '}';
+    }
 }

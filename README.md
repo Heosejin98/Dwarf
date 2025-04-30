@@ -23,12 +23,6 @@ OpenTelemetry Protocol(OTLP)을 활용 초경량 온프레미스 모니터링 �
 java -jar build/libs/otel-receiver-1.0-SNAPSHOT-all.jar
 ```
 
-사용자 지정 포트로 실행:
-
-```bash
-java -jar build/libs/otel-receiver-1.0-SNAPSHOT-all.jar 55680
-```
-
 ## Zero-code Instrumentation으로 클라이언트 애플리케이션 설정
 
 Java 애플리케이션에서 코드 변경 없이 OpenTelemetry를 사용하려면 OpenTelemetry Java 에이전트를 사용하세요:
@@ -42,6 +36,7 @@ java -javaagent:path/to/opentelemetry-javaagent.jar \
      -Dotel.traces.exporter=otlp \
      -Dotel.exporter.otlp.endpoint=http://localhost:4317 \
      -Dotel.service.name=your-service-name \
+     -Dotel.exporter.otlp.protocol=grpc
      -jar your-application.jar
 ```
 

@@ -62,4 +62,12 @@ public class TraceData {
     public int getSpanCount() {
         return spans.size();
     }
+
+    @Override
+    public String toString() {
+        return "TraceData{" +
+                "spans=" + spans +
+                ", resources=" + resources +
+                '}';
+    }
 }

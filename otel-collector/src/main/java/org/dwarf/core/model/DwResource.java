@@ -137,4 +137,19 @@ public class DwResource {
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
     }
+
+    @Override
+    public String toString() {
+        return "DwResource{" +
+                "serviceName='" + serviceName + '\'' +
+                ", serviceVersion='" + serviceVersion + '\'' +
+                ", serviceNamespace='" + serviceNamespace + '\'' +
+                ", serviceInstanceId='" + serviceInstanceId + '\'' +
+                ", hostName='" + hostName + '\'' +
+                ", hostId='" + hostId + '\'' +
+                ", containerId='" + containerId + '\'' +
+                ", containerName='" + containerName + '\'' +
+                ", attributes=" + attributes +
+                '}';
+    }
 }
