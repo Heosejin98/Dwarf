@@ -6,10 +6,8 @@ import io.grpc.stub.StreamObserver;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
-import org.dwarf.collector.converter.OtelTraceConverter;
 import org.dwarf.collector.processor.TraceProcessor;
 import org.dwarf.core.config.CollectorConfig;
-import org.dwarf.core.model.TraceData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,15 +71,10 @@ public class TraceReceiver {
         public void export(ExportTraceServiceRequest request,
                           StreamObserver<ExportTraceServiceResponse> responseObserver) {
             try {
-                // 1. 내부 모델로 변환
-                TraceData traceData = OtelTraceConverter.convertToTraceData(request);
-                logger.debug("Converted to internal model with {} spans", traceData.getSpanCount());
-                logger.debug("Converted to Trace model data {} ", traceData);
+                // 1. 트레이스 프로세서로 전달
+                traceProcessor.processTraces(request);
 
-                // 2. 트레이스 프로세서로 전달
-                traceProcessor.processTraces(traceData);
-
-                // 3. 성공 응답
+                // 2. 성공 응답
                 responseObserver.onNext(ExportTraceServiceResponse.getDefaultInstance());
                 responseObserver.onCompleted();
 

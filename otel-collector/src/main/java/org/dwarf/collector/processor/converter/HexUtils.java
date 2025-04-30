@@ -1,4 +1,4 @@
-package org.dwarf.collector.converter;
+package org.dwarf.collector.processor.converter;
 
 /**
  * 바이트 배열과 16진수 문자열 간 변환 유틸리티 클래스

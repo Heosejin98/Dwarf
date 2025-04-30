@@ -1,4 +1,4 @@
-package org.dwarf.collector.converter;
+package org.dwarf.collector.processor.converter;
 
 import io.opentelemetry.proto.common.v1.AnyValue;
 import io.opentelemetry.proto.common.v1.ArrayValue;
