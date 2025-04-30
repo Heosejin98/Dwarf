@@ -1,6 +1,6 @@
 package org.dwarf.collector.processor;
 
-import org.dwarf.core.model.TraceData;
+import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 
 /**
  * 트레이스 데이터를 처리하는 프로세서 인터페이스
@@ -14,5 +14,5 @@ public interface TraceProcessor {
      * 
      * @param traceData 처리할 트레이스 데이터
      */
-    void processTraces(TraceData traceData);
+    void processTraces(ExportTraceServiceRequest traceData);
 }

@@ -1,9 +1,9 @@
 package org.dwarf;
 
 import org.dwarf.collector.processor.TraceProcessor;
+import org.dwarf.collector.processor.TraceProcessorImpl;
 import org.dwarf.collector.receiver.TraceReceiver;
 import org.dwarf.core.config.CollectorConfig;
-import org.dwarf.core.model.TraceData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
  */
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    private static final TraceProcessor traceProcessor = new TraceProcessorImpl();
+
 
     public static void main(String[] args) {
         logger.info("Starting Dwarf Solution");
@@ -23,16 +25,10 @@ public class Main {
 
             // 2. 리시버 초기화 및 시작
             logger.info("Starting trace receiver on port {}...", collectorConfig.getGrpcPort());
-            TraceProcessor traceProcessor = new TraceProcessor() {
-                @Override
-                public void processTraces(TraceData traceData) {
-
-                }
-            };
             TraceReceiver traceReceiver = new TraceReceiver(collectorConfig, traceProcessor);
             traceReceiver.start();
 
-            logger.info("LightweightDwarf started successfully!");
+            logger.info("Dwarf started successfully!");
             logger.info("Listening for traces on gRPC port: {}", collectorConfig.getGrpcPort());
             logger.info("Press Ctrl+C to shutdown");
 
