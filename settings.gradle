@@ -1,4 +1,5 @@
 rootProject.name = 'dwarf'
 
 include 'otel-collector'
+include 'test-was'
 
