@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # OpenTelemetry Collector 서비스
+  otel-collector:
+    build: 
+      context: ./otel-collector
+      dockerfile: Dockerfile
+    container_name: otel-collector
+    ports:
+      - "4317:4317"  # gRPC port
+      - "4318:4318"  # HTTP port
+    environment:
+      - JAVA_OPTS=-Xmx512m -Xms256m
+    networks:
+      - dwarf-network
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Test WAS 서비스
+  test-was:
+    build: 
+      context: ./test-was
+      dockerfile: Dockerfile
+    container_name: test-was
+    ports:
+      - "8080:8080"
+    environment:
+      # OpenTelemetry 설정
+      - OTEL_SERVICE_NAME=test-was
+      - OTEL_SERVICE_VERSION=0.0.1
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=test-was,service.version=0.0.1,deployment.environment=docker-test
+      
+      # OTLP Exporter 설정
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_EXPORTER_OTLP_COMPRESSION=gzip
+      
+      # 개별 신호 설정
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://otel-collector:4317
+      
+      # Exporter 활성화
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_LOGS_EXPORTER=otlp
+      
+      # 샘플링 설정
+      - OTEL_TRACES_SAMPLER=always_on
+      - OTEL_METRICS_EXEMPLAR_FILTER=always_on
+      
+      # Instrumentation 설정
+      - OTEL_INSTRUMENTATION_HTTP_CLIENT_CAPTURE_REQUEST_HEADERS=content-type,accept
+      - OTEL_INSTRUMENTATION_HTTP_CLIENT_CAPTURE_RESPONSE_HEADERS=content-type
+      - OTEL_INSTRUMENTATION_HTTP_SERVER_CAPTURE_REQUEST_HEADERS=content-type,accept,user-agent
+      - OTEL_INSTRUMENTATION_HTTP_SERVER_CAPTURE_RESPONSE_HEADERS=content-type
+      
+      # JVM 설정
+      - JAVA_OPTS=-Xmx1g -Xms512m
+    networks:
+      - dwarf-network
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  dwarf-network:
+    driver: bridge
+    name: dwarf-network
+
+# 볼륨 설정 (로그나 데이터 영속성이 필요한 경우)
+volumes:
+  dwarf-data:
+    name: dwarf-data
